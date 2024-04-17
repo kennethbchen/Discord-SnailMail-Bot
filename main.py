@@ -27,10 +27,15 @@ async def on_ready():
 
 @client.tree.command(description="Check your mailbox for unread mail.")
 async def mailbox(interaction: discord.Interaction):
-    await interaction.response.send_message("mailbox")
+    await interaction.response.send_message("mailbox", ephemeral=True)
 
 @client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
-    await interaction.response.send_message("register")
+    await interaction.response.send_message("register", ephemeral=True)
+
+@client.tree.command(description="Send mail to someone.")
+async def send(interaction: discord.Interaction, user: str, message: str):
+    await interaction.response.send_message("send", ephemeral=True)
+
 
 client.run(config["discord_bot_token"])
