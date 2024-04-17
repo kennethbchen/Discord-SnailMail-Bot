@@ -1,9 +1,14 @@
 import json
 import discord
 from discord import app_commands
+from db_interface import SnailMailDBInterface
+
 
 config = json.load(open('config.json'))
 
+db = SnailMailDBInterface()
+
+exit()
 
 # https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/app_commands/basic.py
 class MyClient(discord.Client):
