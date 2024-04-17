@@ -1,23 +1,25 @@
 import json
 import discord
+from discord.ext import commands
 
 config = json.load(open('config.json'))
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix='$', intents=intents, client=discord.Client(intents=intents))
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Lgged in as {client.user}')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+    print("Syncing bot commands...")
+    commands = await bot.tree.sync()
+    print("Synced Commands:", commands)
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+    print(f'Logged in as {bot.user}')
 
-client.run(config["discord_bot_token"])
+@bot.hybrid_command()
+async def test(ctx):
+    await ctx.send("test command")
+
+bot.run(config["discord_bot_token"])
