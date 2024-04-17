@@ -4,6 +4,7 @@ from discord import app_commands
 
 config = json.load(open('config.json'))
 
+
 # https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/app_commands/basic.py
 class MyClient(discord.Client):
     def __init__(self):
@@ -19,23 +20,27 @@ class MyClient(discord.Client):
         print("Syncing Commands...")
         await self.tree.sync()
 
+
 client = MyClient()
+
 
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user}')
 
+
 @client.tree.command(description="Check your mailbox for unread mail.")
 async def mailbox(interaction: discord.Interaction):
     await interaction.response.send_message("mailbox", ephemeral=True)
+
 
 @client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
     await interaction.response.send_message("register", ephemeral=True)
 
+
 @client.tree.command(description="Send mail to someone.")
 async def send(interaction: discord.Interaction, user: str, message: str):
     await interaction.response.send_message("send", ephemeral=True)
-
 
 client.run(config["discord_bot_token"])
