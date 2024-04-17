@@ -25,16 +25,12 @@ client = MyClient()
 async def on_ready():
     print(f'Logged in as {client.user}')
 
-@client.tree.command()
+@client.tree.command(description="Check your mailbox for unread mail.")
 async def mailbox(interaction: discord.Interaction):
     await interaction.response.send_message("mailbox")
 
-@client.tree.command()
+@client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
     await interaction.response.send_message("register")
-
-@client.tree.command()
-async def link(interaction: discord.Interaction):
-    await interaction.response.send_message("link")
 
 client.run(config["discord_bot_token"])
