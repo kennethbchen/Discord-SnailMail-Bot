@@ -4,7 +4,7 @@ This Discord bot simulates the act of sending and receiving letters as if they w
 
 ## Features
 
-Users can register with the bot and link with other users to enable sending and receiving letters to each other.
+Users can register with the bot to enable sending and receiving letters to others.
 
 Users can write and send letters to other users, and those letters will be delivered after a certain amount of time (typically days) has passed to simulate the real world transit of mail.
 
