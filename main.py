@@ -1,5 +1,6 @@
 import json
 import discord
+import time
 from discord import app_commands
 from db_interface import SnailMailDBInterface
 
@@ -70,11 +71,19 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
         await interaction.response.send_message("Message cannot be empty.", ephemeral=True)
         return
 
+    day = 86400 #86400 seconds in a day
+
+    if config["debug"]["enabled"]:
+        # shorten delivery time for debug
+        day = 30
+
     sender_id = db.get_user_id_from_username(interaction.user.name)
-    recipient_id = db.get_user_id_from_username(recipient)
+    receiver_id = db.get_user_id_from_username(recipient)
+    send_datetime = int(time.time())
+    delivery_datetime = int(time.time() + 3 * day)
+    body = message
 
-
-    message_body = message
-    await interaction.response.send_message("send", ephemeral=True)
+    db.send_message(sender_id, receiver_id, send_datetime, delivery_datetime, body=body)
+    await interaction.response.send_message("Mail Sent.", ephemeral=True)
 
 client.run(config["discord_bot_token"])

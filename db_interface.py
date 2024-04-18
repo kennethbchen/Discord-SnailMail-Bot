@@ -25,6 +25,8 @@ class SnailMailDBInterface:
 
         cur.execute("CREATE TABLE users (id integer PRIMARY KEY NOT NULL, username string UNIQUE)")
 
+        cur.execute("CREATE TABLE messages (id integer PRIMARY KEY NOT NULL, sender_id integer NOT NULL, receiver_id integer NOT NULL, send_datetime integer NOT NULL, delivery_datetime integer NOT NULL, body TEXT NOT NULL)")
+
         cur.close()
 
     def register_user(self, discord_username):
@@ -72,6 +74,7 @@ class SnailMailDBInterface:
         pass
 
     def send_message(self, sender_id, receiver_id, send_time, delivery_time, body):
+        print("send")
         pass
 
     def set_message_read(self, message_id):
