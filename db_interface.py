@@ -25,7 +25,7 @@ class SnailMailDBInterface:
 
         cur.execute("CREATE TABLE users (id integer PRIMARY KEY NOT NULL, username string UNIQUE)")
 
-        cur.execute("CREATE TABLE messages (id integer PRIMARY KEY NOT NULL, sender_id integer NOT NULL, receiver_id integer NOT NULL, send_datetime integer NOT NULL, delivery_datetime integer NOT NULL, body TEXT NOT NULL)")
+        cur.execute("CREATE TABLE messages (id integer PRIMARY KEY NOT NULL, sender_id integer NOT NULL, receiver_id integer NOT NULL, send_datetime integer NOT NULL, delivery_datetime integer NOT NULL, body TEXT NOT NULL, read integer default FALSE NOT NULL)")
 
         cur.close()
 
@@ -77,7 +77,7 @@ class SnailMailDBInterface:
 
         cur = self.db_connection.cursor()
 
-        cur.execute("INSERT INTO messages (id, sender_id, receiver_id, send_datetime, delivery_datetime, body) VALUES (NULL, ?, ?, ?, ?, ?)", [sender_id, receiver_id, send_time, delivery_time, body])
+        cur.execute("INSERT INTO messages (id, sender_id, receiver_id, send_datetime, delivery_datetime, body, read) VALUES (NULL, ?, ?, ?, ?, ?, FALSE)", [sender_id, receiver_id, send_time, delivery_time, body])
 
         cur.close()
 

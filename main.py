@@ -80,7 +80,7 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
     sender_id = db.get_user_id_from_username(interaction.user.name)
     receiver_id = db.get_user_id_from_username(recipient)
     send_datetime = int(time.time())
-    delivery_datetime = int(time.time() + 3 * day) # 3 Days after send time
+    delivery_datetime = int(time.time() + 3 * day)  # 3 Days after send time
     body = message
 
     db.send_message(sender_id, receiver_id, send_datetime, delivery_datetime, body=body)
