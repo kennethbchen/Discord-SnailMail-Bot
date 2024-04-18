@@ -88,6 +88,41 @@ class SnailMailDBInterface:
 
         return result
 
+    # Marks the message as read
+    def get_oldest_unread_message_from(self, to_who_username, from_who_username):
+
+        if not self.is_user_registered(to_who_username):
+            return None
+
+        if not self.is_user_registered(from_who_username):
+            return None
+
+        receiver_id = self.get_user_id_from_username(to_who_username)
+        sender_id = self.get_user_id_from_username(from_who_username)
+
+        cur = self.db_connection.cursor()
+
+        # Messages that are delivered have a delivery_datetime that is in the past
+        cur.execute("SELECT messages.id, username as sender, body FROM messages JOIN users ON sender_id=users.id WHERE sender_id = ? AND receiver_id = ? AND delivery_datetime < strftime('%s') AND read = FALSE ORDER BY send_datetime ASC LIMIT 1", [sender_id, receiver_id])
+
+        result = cur.fetchone()
+
+
+
+        if not result:
+            cur.close()
+            return None
+
+        # Mark this message as read
+        message_id = result[0]
+        cur.execute("UPDATE messages SET read = TRUE WHERE id = ?", [message_id])
+
+        cur.close()
+
+        self.db_connection.commit()
+
+        return result[1:]
+
     def get_unread_messages(self, discord_username):
 
         if not self.is_user_registered(discord_username):
@@ -116,6 +151,3 @@ class SnailMailDBInterface:
         cur.close()
 
         self.db_connection.commit()
-
-    def set_message_read(self, message_id):
-        pass

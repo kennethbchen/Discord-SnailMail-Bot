@@ -48,20 +48,40 @@ async def register(interaction: discord.Interaction):
 async def mailbox(interaction: discord.Interaction):
 
     if not db.is_user_registered(interaction.user.name):
-        await interaction.response.send_message("You must register (/register) before you can view the mailbox.",
-                                                ephemeral=True)
+        await interaction.response.send_message("You must register (/register) before you can view the mailbox.", ephemeral=True)
         return
 
     mail = db.get_mailbox_summary(interaction.user.name)
 
     if len(mail) == 0:
         await interaction.response.send_message("Your mailbox is empty.", ephemeral=True)
+        return
 
     # Format response
     response = "Your mailbox contains letters from:\n"
     response += "\n".join([" (".join([str(item) for item in row]) + ")" for row in mail])
 
     await interaction.response.send_message(response, ephemeral=True)
+
+@client.tree.command(description="Read the oldest unread letter from a user.")
+@app_commands.describe(from_who="The user whose mail you want to read.")
+async def read(interaction: discord.Interaction, from_who: str):
+
+    if not db.is_user_registered(interaction.user.name):
+        await interaction.response.send_message("You must register (/register) before you can send or receive mail.", ephemeral=True)
+        return
+
+    if not db.is_user_registered(from_who):
+        await interaction.response.send_message("User does not exist or is unregistered.", ephemeral=True)
+        return
+
+    letter = db.get_oldest_unread_message_from(interaction.user.name, from_who)
+
+    if not letter:
+        await interaction.response.send_message("You do not have mail from this user.", ephemeral=True)
+        return
+
+    await interaction.response.send_message(f"Letter from {letter[0]}:\n```{letter[1]}```", ephemeral=True)
 
 
 @client.tree.command(description="Send mail to someone.")
@@ -83,8 +103,8 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
     day = 86400  # 86400 seconds in a day
 
     if config["debug"]["enabled"]:
-        # shorten delivery time for debug
-        day = 30
+        # shorten delivery time to one minute for debug
+        day = 20
 
     sender_id = db.get_user_id_from_username(interaction.user.name)
     receiver_id = db.get_user_id_from_username(recipient)
