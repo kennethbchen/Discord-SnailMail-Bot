@@ -33,7 +33,7 @@ async def on_ready():
     print(f'Logged in as {client.user}')
 
 
-@client.tree.command(description="Register to start sending and receiving mail.")
+@client.tree.command(description="Register to start sending and receiving letters.")
 async def register(interaction: discord.Interaction):
 
     if db.is_user_registered(interaction.user.name):
@@ -41,7 +41,7 @@ async def register(interaction: discord.Interaction):
         return
 
     db.register_user(interaction.user.name)
-    await interaction.response.send_message("Registered Successfully.", ephemeral=True)
+    await interaction.response.send_message("Registered successfully.", ephemeral=True)
 
 
 @client.tree.command(description="Check your mailbox for new mail.")
@@ -63,8 +63,9 @@ async def mailbox(interaction: discord.Interaction):
 
     await interaction.response.send_message(response, ephemeral=True)
 
+
 @client.tree.command(description="Read the oldest unread letter from a user.")
-@app_commands.describe(from_who="The user whose mail you want to read.")
+@app_commands.describe(from_who="The user whose letter you want to read.")
 async def read(interaction: discord.Interaction, from_who: str):
 
     if not db.is_user_registered(interaction.user.name):
@@ -78,18 +79,18 @@ async def read(interaction: discord.Interaction, from_who: str):
     letter = db.get_oldest_unread_message_from(interaction.user.name, from_who)
 
     if not letter:
-        await interaction.response.send_message("You do not have mail from this user.", ephemeral=True)
+        await interaction.response.send_message("You do not have any unread letters from this user.", ephemeral=True)
         return
 
     await interaction.response.send_message(f"Letter from {letter[0]}:\n```{letter[1]}```", ephemeral=True)
 
 
-@client.tree.command(description="Send mail to someone.")
-@app_commands.describe(recipient="The user that will receive this message.", message="The message to send.")
+@client.tree.command(description="Send a letter to someone.")
+@app_commands.describe(recipient="The user that will receive this letter.", message="The message to send.")
 async def send(interaction: discord.Interaction, recipient: str, message: str):
 
     if not db.is_user_registered(interaction.user.name):
-        await interaction.response.send_message("You must register (/register) before you can send mail.", ephemeral=True)
+        await interaction.response.send_message("You must register (/register) before you can send a letter.", ephemeral=True)
         return
 
     if not db.is_user_registered(recipient):
@@ -104,7 +105,7 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
 
     if config["debug"]["enabled"]:
         # shorten delivery time to one minute for debug
-        day = 20
+        day = 10
 
     sender_id = db.get_user_id_from_username(interaction.user.name)
     receiver_id = db.get_user_id_from_username(recipient)
@@ -114,7 +115,7 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
 
     db.send_message(sender_id, receiver_id, send_datetime, delivery_datetime, body=body)
 
-    await interaction.response.send_message("Mail Sent.", ephemeral=True)
+    await interaction.response.send_message("Letter sent.", ephemeral=True)
 
 
 client.run(config["discord_bot_token"])
