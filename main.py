@@ -52,10 +52,18 @@ async def mailbox(interaction: discord.Interaction):
     await interaction.response.send_message("mailbox", ephemeral=True)
 
 @client.tree.command(description="Send mail to someone.")
-async def send(interaction: discord.Interaction, user: str, message: str):
+async def send(interaction: discord.Interaction, recipient: str, message: str):
 
     if not db.is_user_registered(interaction.user.name):
         await interaction.response.send_message("You must register (/register) before you can send mail.", ephemeral=True)
+        return
+
+    if not db.is_user_registered(recipient):
+        await interaction.response.send_message("Recipient user does not exist or is unregistered.", ephemeral=True)
+        return
+
+    if not message:
+        await interaction.response.send_message("Message cannot be empty.", ephemeral=True)
         return
 
     await interaction.response.send_message("send", ephemeral=True)
