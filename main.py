@@ -70,6 +70,11 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
         await interaction.response.send_message("Message cannot be empty.", ephemeral=True)
         return
 
+    sender_id = db.get_user_id_from_username(interaction.user.name)
+    recipient_id = db.get_user_id_from_username(recipient)
+
+
+    message_body = message
     await interaction.response.send_message("send", ephemeral=True)
 
 client.run(config["discord_bot_token"])
