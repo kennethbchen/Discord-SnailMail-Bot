@@ -56,7 +56,7 @@ class SnailMailDBInterface:
 
     def get_user_id_from_username(self, discord_username):
 
-        if self.is_user_registered(discord_username):
+        if not self.is_user_registered(discord_username):
             return -1
 
         cur = self.db_connection.cursor()
@@ -74,8 +74,14 @@ class SnailMailDBInterface:
         pass
 
     def send_message(self, sender_id, receiver_id, send_time, delivery_time, body):
-        print("send")
-        pass
+
+        cur = self.db_connection.cursor()
+
+        cur.execute("INSERT INTO messages (id, sender_id, receiver_id, send_datetime, delivery_datetime, body) VALUES (NULL, ?, ?, ?, ?, ?)", [sender_id, receiver_id, send_time, delivery_time, body])
+
+        cur.close()
+
+        self.db_connection.commit()
 
     def set_message_read(self, message_id):
         pass

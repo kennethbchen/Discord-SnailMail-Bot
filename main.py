@@ -4,7 +4,6 @@ import time
 from discord import app_commands
 from db_interface import SnailMailDBInterface
 
-
 config = json.load(open('config.json'))
 
 db = SnailMailDBInterface()
@@ -17,7 +16,6 @@ class MyClient(discord.Client):
         self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self):
-
         if config["debug"]["enabled"]:
             print("Copying commands to debug guild...")
             self.tree.copy_global_to(guild=discord.Object(id=config["debug"]["debug_guild_id"]))
@@ -31,6 +29,7 @@ client = MyClient()
 
 @client.event
 async def on_ready():
+
     print(f'Logged in as {client.user}')
 
 
@@ -49,7 +48,8 @@ async def register(interaction: discord.Interaction):
 async def mailbox(interaction: discord.Interaction):
 
     if not db.is_user_registered(interaction.user.name):
-        await interaction.response.send_message("You must register (/register) before you can view the mailbox.", ephemeral=True)
+        await interaction.response.send_message("You must register (/register) before you can view the mailbox.",
+                                                ephemeral=True)
         return
 
     await interaction.response.send_message("mailbox", ephemeral=True)
@@ -71,7 +71,7 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
         await interaction.response.send_message("Message cannot be empty.", ephemeral=True)
         return
 
-    day = 86400 #86400 seconds in a day
+    day = 86400  # 86400 seconds in a day
 
     if config["debug"]["enabled"]:
         # shorten delivery time for debug
@@ -80,10 +80,12 @@ async def send(interaction: discord.Interaction, recipient: str, message: str):
     sender_id = db.get_user_id_from_username(interaction.user.name)
     receiver_id = db.get_user_id_from_username(recipient)
     send_datetime = int(time.time())
-    delivery_datetime = int(time.time() + 3 * day)
+    delivery_datetime = int(time.time() + 3 * day) # 3 Days after send time
     body = message
 
     db.send_message(sender_id, receiver_id, send_datetime, delivery_datetime, body=body)
+
     await interaction.response.send_message("Mail Sent.", ephemeral=True)
+
 
 client.run(config["discord_bot_token"])
