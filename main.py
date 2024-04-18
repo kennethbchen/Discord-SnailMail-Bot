@@ -34,20 +34,30 @@ async def on_ready():
 
 @client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
-    exists = db.is_user_registered(interaction.user.name)
 
-    if exists:
-        await interaction.response.send_message("User is already registered.", ephemeral=True)
-    else:
-        db.register_user(interaction.user.name)
-        await interaction.response.send_message("Registered Successfully.", ephemeral=True)
+    if db.is_user_registered(interaction.user.name):
+        await interaction.response.send_message("You are already registered.", ephemeral=True)
+        return
+
+    db.register_user(interaction.user.name)
+    await interaction.response.send_message("Registered Successfully.", ephemeral=True)
 
 @client.tree.command(description="Check your mailbox for unread mail.")
 async def mailbox(interaction: discord.Interaction):
+
+    if not db.is_user_registered(interaction.user.name):
+        await interaction.response.send_message("You must register (/register) before you can view the mailbox.", ephemeral=True)
+        return
+
     await interaction.response.send_message("mailbox", ephemeral=True)
 
 @client.tree.command(description="Send mail to someone.")
 async def send(interaction: discord.Interaction, user: str, message: str):
+
+    if not db.is_user_registered(interaction.user.name):
+        await interaction.response.send_message("You must register (/register) before you can send mail.", ephemeral=True)
+        return
+
     await interaction.response.send_message("send", ephemeral=True)
 
 client.run(config["discord_bot_token"])
