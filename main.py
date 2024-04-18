@@ -32,12 +32,6 @@ client = MyClient()
 async def on_ready():
     print(f'Logged in as {client.user}')
 
-
-@client.tree.command(description="Check your mailbox for unread mail.")
-async def mailbox(interaction: discord.Interaction):
-    await interaction.response.send_message("mailbox", ephemeral=True)
-
-
 @client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
     exists = db.is_user_registered(interaction.user.name)
@@ -48,6 +42,9 @@ async def register(interaction: discord.Interaction):
         db.register_user(interaction.user.name)
         await interaction.response.send_message("Registered Successfully.", ephemeral=True)
 
+@client.tree.command(description="Check your mailbox for unread mail.")
+async def mailbox(interaction: discord.Interaction):
+    await interaction.response.send_message("mailbox", ephemeral=True)
 
 @client.tree.command(description="Send mail to someone.")
 async def send(interaction: discord.Interaction, user: str, message: str):
