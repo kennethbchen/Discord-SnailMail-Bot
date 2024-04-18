@@ -19,7 +19,7 @@ class MyClient(discord.Client):
         if config["debug"]["enabled"]:
             print("Copying commands to debug guild...")
             self.tree.copy_global_to(guild=discord.Object(id=config["debug"]["debug_guild_id"]))
-
+            return
         print("Syncing Commands...")
         await self.tree.sync()
 
@@ -44,7 +44,7 @@ async def register(interaction: discord.Interaction):
     await interaction.response.send_message("Registered Successfully.", ephemeral=True)
 
 
-@client.tree.command(description="Check your mailbox for unread mail.")
+@client.tree.command(description="Check your mailbox for new mail.")
 async def mailbox(interaction: discord.Interaction):
 
     if not db.is_user_registered(interaction.user.name):
@@ -52,9 +52,15 @@ async def mailbox(interaction: discord.Interaction):
                                                 ephemeral=True)
         return
 
-    mail = db.get_unread_messages(interaction.user.name)
+    mail = db.get_mailbox_summary(interaction.user.name)
 
-    response = "\n\n".join([":\n".join(msg) for msg in mail])
+    if len(mail) == 0:
+        await interaction.response.send_message("Your mailbox is empty.", ephemeral=True)
+
+    # Format response
+    response = "Your mailbox contains letters from:\n"
+    response += "\n".join([" (".join([str(item) for item in row]) + ")" for row in mail])
+
     await interaction.response.send_message(response, ephemeral=True)
 
 

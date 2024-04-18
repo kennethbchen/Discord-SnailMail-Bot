@@ -69,6 +69,24 @@ class SnailMailDBInterface:
 
         return result
 
+    # Gets a list of how many unread messages discord_username has grouped by sender
+    def get_mailbox_summary(self, discord_username):
+
+        if not self.is_user_registered(discord_username):
+            return None
+
+        receiver_id = self.get_user_id_from_username(discord_username)
+
+        cur = self.db_connection.cursor()
+
+        # Messages that are delivered have a delivery_datetime that is in the past
+        cur.execute("SELECT username, COUNT(*) as count FROM messages JOIN users ON sender_id=users.id WHERE receiver_id = ? AND delivery_datetime < strftime('%s') AND read = FALSE GROUP BY username", [receiver_id])
+
+        result = cur.fetchall()
+
+        cur.close()
+
+        return result
 
     def get_unread_messages(self, discord_username):
 
