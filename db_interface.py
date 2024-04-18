@@ -29,6 +29,9 @@ class SnailMailDBInterface:
 
     def register_user(self, discord_username):
 
+        if self.is_user_registered(discord_username):
+            return
+
         cur = self.db_connection.cursor()
 
         cur.execute("INSERT INTO users values (NULL, ?)", [discord_username])
@@ -39,7 +42,16 @@ class SnailMailDBInterface:
 
     def is_user_registered(self, discord_username):
 
-        pass
+        cur = self.db_connection.cursor()
+
+        cur.execute("SELECT COUNT(*) FROM users WHERE username = ?", [discord_username])
+
+        count = cur.fetchone()[0]
+
+        cur.close()
+
+        return count > 0
+
 
     def get_unread_messages(self, discord_username):
         pass

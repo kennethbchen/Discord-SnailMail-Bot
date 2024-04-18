@@ -6,8 +6,8 @@ from db_interface import SnailMailDBInterface
 
 config = json.load(open('config.json'))
 
-db = SnailMailDBInterface(reset_database=True)
-db.register_user("test")
+db = SnailMailDBInterface()
+print(db.is_user_registered("test0"))
 exit()
 
 # https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/app_commands/basic.py
