@@ -7,8 +7,7 @@ from db_interface import SnailMailDBInterface
 config = json.load(open('config.json'))
 
 db = SnailMailDBInterface()
-print(db.is_user_registered("test0"))
-exit()
+
 
 # https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/app_commands/basic.py
 class MyClient(discord.Client):
@@ -41,7 +40,13 @@ async def mailbox(interaction: discord.Interaction):
 
 @client.tree.command(description="Register to start sending and receiving mail.")
 async def register(interaction: discord.Interaction):
-    await interaction.response.send_message("register", ephemeral=True)
+    exists = db.is_user_registered(interaction.user.name)
+
+    if exists:
+        await interaction.response.send_message("User is already registered.", ephemeral=True)
+    else:
+        db.register_user(interaction.user.name)
+        await interaction.response.send_message("Registered Successfully.", ephemeral=True)
 
 
 @client.tree.command(description="Send mail to someone.")

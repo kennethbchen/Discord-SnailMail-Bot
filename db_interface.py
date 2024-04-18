@@ -52,6 +52,21 @@ class SnailMailDBInterface:
 
         return count > 0
 
+    def get_user_id_from_username(self, discord_username):
+
+        if self.is_user_registered(discord_username):
+            return -1
+
+        cur = self.db_connection.cursor()
+
+        cur.execute("SELECT id FROM users WHERE username = ?", [discord_username])
+
+        result = cur.fetchone()[0]
+
+        cur.close()
+
+        return result
+
 
     def get_unread_messages(self, discord_username):
         pass
