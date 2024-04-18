@@ -71,7 +71,23 @@ class SnailMailDBInterface:
 
 
     def get_unread_messages(self, discord_username):
-        pass
+
+        if not self.is_user_registered(discord_username):
+            return None
+
+        receiver_id = self.get_user_id_from_username(discord_username)
+
+        cur = self.db_connection.cursor()
+
+        # Messages that are delivered have a delivery_datetime that is in the past
+        cur.execute("SELECT username as sender, body FROM messages JOIN users ON sender_id=users.id WHERE receiver_id = ? AND delivery_datetime < strftime('%s') AND read = FALSE ORDER BY send_datetime ASC", [receiver_id])
+
+        result = cur.fetchall()
+
+        cur.close()
+
+        return result
+
 
     def send_message(self, sender_id, receiver_id, send_time, delivery_time, body):
 

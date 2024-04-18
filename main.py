@@ -52,7 +52,10 @@ async def mailbox(interaction: discord.Interaction):
                                                 ephemeral=True)
         return
 
-    await interaction.response.send_message("mailbox", ephemeral=True)
+    mail = db.get_unread_messages(interaction.user.name)
+
+    response = "\n\n".join([":\n".join(msg) for msg in mail])
+    await interaction.response.send_message(response, ephemeral=True)
 
 
 @client.tree.command(description="Send mail to someone.")
